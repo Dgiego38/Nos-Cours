@@ -1,12 +1,11 @@
 {
+    "version": 1,
     "courses": [],
     "homeworks": [],
     "notes": [],
-    "averages": [
-        {
-            "subject": "Autre",
-            "value": "13,10"
-        }
-    ],
-    "version": 2
+    "generalAverage": {
+        "value": "13,10
+        / 20",
+        "updatedAt": ""
+    }
 }
