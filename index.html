@@ -7,13 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Comportement type Application Native */
         * {
             -webkit-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
         }
-        /* Autoriser la sélection uniquement dans les inputs et les documents/liens si besoin */
         input, textarea, select {
             -webkit-user-select: text;
             user-select: text;
@@ -31,7 +29,6 @@
     <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-30 shrink-0">
         <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- Bouton Hamburger Mobile -->
                 <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-300 hover:text-white bg-slate-700/50 rounded-xl transition">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
@@ -57,7 +54,7 @@
             </div>
         </div>
 
-        <!-- Menu Hamburger Déroulant (Mobile) -->
+        <!-- Menu Hamburger Mobile -->
         <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 px-4 py-3 space-y-1 shadow-xl">
             <button onclick="switchTab('courses'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-book mr-2.5 text-blue-400"></i> Cours</button>
             <button onclick="switchTab('homework'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-calendar-check mr-2.5 text-purple-400"></i> Devoirs</button>
@@ -66,10 +63,10 @@
         </div>
     </header>
 
-    <!-- Contenu Principal (Scrollable interne) -->
+    <!-- Contenu Principal -->
     <main class="max-w-5xl mx-auto px-4 py-6 flex-1 w-full overflow-y-auto">
         
-        <!-- VUE 1 : COURS -->
+        <!-- COURS -->
         <div id="view-courses" class="tab-view space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h2 class="text-xl font-bold text-white tracking-tight">Fichiers & Cours partagés</h2>
@@ -80,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Filtres par matière -->
             <div class="flex flex-wrap gap-1.5" id="filterButtons">
                 <button onclick="filterCourses('all')" class="filter-btn active px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-900 transition shadow-sm">Tout</button>
                 <button onclick="filterCourses('Maths')" class="filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition">Maths</button>
@@ -99,7 +95,7 @@
             </div>
         </div>
 
-        <!-- VUE 2 : DEVOIRS -->
+        <!-- DEVOIRS -->
         <div id="view-homework" class="tab-view hidden space-y-4">
             <div>
                 <h2 class="text-xl font-bold text-white tracking-tight">Devoirs & Évaluations</h2>
@@ -112,7 +108,7 @@
             </div>
         </div>
 
-        <!-- VUE 3 : PENSE-BÊTE -->
+        <!-- PENSE-BÊTE -->
         <div id="view-notes" class="tab-view hidden space-y-4">
             <div>
                 <h2 class="text-xl font-bold text-white tracking-tight">Pense-bête</h2>
@@ -125,7 +121,7 @@
             </div>
         </div>
 
-        <!-- VUE 4 : MOYENNES -->
+        <!-- MOYENNES -->
         <div id="view-averages" class="tab-view hidden space-y-4">
             <div>
                 <h2 class="text-xl font-bold text-white tracking-tight">Moyennes de la classe</h2>
@@ -141,6 +137,22 @@
         </div>
 
     </main>
+
+    <!-- BANNIÈRE DE MISE À JOUR -->
+    <div id="updateBanner" class="hidden fixed bottom-6 left-4 right-4 max-w-sm mx-auto bg-blue-600 text-white p-3.5 rounded-2xl shadow-2xl z-50 flex items-center justify-between border border-blue-400/30">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-arrows-rotate text-white animate-spin"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold">Mise à jour disponible !</p>
+                <p class="text-[11px] text-blue-100">Du nouveau contenu est en ligne.</p>
+            </div>
+        </div>
+        <button onclick="window.location.reload(true)" class="bg-white text-blue-600 px-3.5 py-2 rounded-xl text-xs font-bold shadow hover:bg-blue-50 transition shrink-0">
+            Actualiser
+        </button>
+    </div>
 
     <!-- MODALE ADMIN -->
     <div id="adminModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -173,7 +185,7 @@
                 
                 <div class="bg-blue-950/40 border border-blue-900/50 rounded-xl p-3.5">
                     <h3 class="text-xs font-bold text-blue-300 uppercase mb-1"><i class="fa-solid fa-code mr-1"></i> Sauvegarde courses.json</h3>
-                    <p class="text-xs text-blue-200/80 mb-2.5">Copie les données modifiées pour mettre à jour ton fichier <code class="bg-blue-900/60 px-1 py-0.5 rounded text-blue-200">courses.json</code> sur GitHub :</p>
+                    <p class="text-xs text-blue-200/80 mb-2.5">Copie les données pour mettre à jour <code class="bg-blue-900/60 px-1 py-0.5 rounded text-blue-200">courses.json</code> :</p>
                     <button onclick="copyJsonCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-copy"></i> Copier le contenu JSON
                     </button>
@@ -246,11 +258,12 @@
 
     <!-- SCRIPT APPLICATION -->
     <script>
-        // Hash SHA-256 sécurisé pour le code admin (ne contient pas le code en clair)
         const ADMIN_HASH_TARGET = "a60965e6833bda1a7e4b9d0739e1bf064bb66cbb4b9cf4f83ebc2ef503554e28"; 
         let isAuthenticated = false;
+        let localVersion = null;
 
         let siteData = {
+            version: 1,
             courses: [],
             homeworks: [],
             notes: [],
@@ -267,34 +280,65 @@
             "Autre": "bg-slate-700/50 text-slate-300 border border-slate-600/30"
         };
 
-        // Chargement depuis courses.json (ou localStorage en fallback)
-        async function loadData() {
+        async function sha256(message) {
+            // Sécurité robuste gérant aussi les tests locaux en file://
+            try {
+                const msgBuffer = new TextEncoder().encode(message);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch(e) {
+                // Fallback local si crypto.subtle est bloqué hors https
+                return btoa(message); 
+            }
+        }
+
+        async function loadData(isBackgroundCheck = false) {
             try {
                 const response = await fetch('courses.json?t=' + Date.now());
                 if (response.ok) {
-                    siteData = await response.json();
-                } else {
-                    loadFromLocal();
+                    const remoteData = await response.json();
+                    
+                    if (localVersion === null) {
+                        siteData = remoteData;
+                        localVersion = remoteData.version || 1;
+                        renderAll();
+                    } else if (remoteData.version && remoteData.version > localVersion) {
+                        document.getElementById('updateBanner').classList.remove('hidden');
+                    }
                 }
             } catch(e) {
-                loadFromLocal();
+                if (!isBackgroundCheck) {
+                    loadFromLocal();
+                    renderAll();
+                }
             }
-            renderAll();
         }
 
         function loadFromLocal() {
             const saved = localStorage.getItem('classe_hub_secure_data');
             if(saved) {
-                try { siteData = JSON.parse(saved); } catch(e) {}
+                try { 
+                    siteData = JSON.parse(saved); 
+                    localVersion = siteData.version || 1;
+                } catch(e) {}
             }
         }
 
         function saveData() {
+            siteData.version = (siteData.version || 1) + 1;
+            localVersion = siteData.version;
             localStorage.setItem('classe_hub_secure_data', JSON.stringify(siteData));
             renderAll();
         }
 
-        // Navigation
+        setInterval(() => loadData(true), 60000);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'visible') {
+                loadData(true);
+            }
+        });
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-' + tabName).classList.remove('hidden');
@@ -310,7 +354,6 @@
             document.getElementById('mobileMenu').classList.toggle('hidden');
         }
 
-        // Rendu Cours
         let currentSubject = 'all';
         function renderCourses() {
             const grid = document.getElementById('coursesGrid');
@@ -359,7 +402,6 @@
             renderCourses();
         }
 
-        // Rendu Devoirs
         function renderHomework() {
             const grid = document.getElementById('homeworkGrid');
             const noRes = document.getElementById('noHomework');
@@ -384,7 +426,6 @@
             }
         }
 
-        // Rendu Pense-bête
         function renderNotes() {
             const grid = document.getElementById('notesGrid');
             const noRes = document.getElementById('noNotes');
@@ -405,7 +446,6 @@
             }
         }
 
-        // Rendu Moyennes
         function renderAverages() {
             const list = document.getElementById('averagesList');
             const noRes = document.getElementById('noAverages');
@@ -433,14 +473,6 @@
             renderNotes();
             renderAverages();
             renderAdminLists();
-        }
-
-        // Gestion Admin et Hachage PIN sécurisé
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
         function openAdminModal() {
@@ -486,7 +518,6 @@
             document.getElementById('adm-tab-' + tab).className = "admin-tab pb-2 px-3 border-b-2 border-blue-500 text-blue-400 font-semibold";
         }
 
-        // Ajouts et Suppressions
         function addCourse(e) {
             e.preventDefault();
             const title = document.getElementById('cTitle').value.trim();
