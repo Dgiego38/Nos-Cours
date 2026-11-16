@@ -48,11 +48,9 @@
             </nav>
 
             <div class="flex items-center gap-2">
-                <!-- Bouton Actualisation Forcée PWA -->
                 <button onclick="forceReloadData()" title="Actualiser" class="p-2.5 text-slate-300 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-xl transition">
                     <i id="refreshIcon" class="fa-solid fa-rotate-right text-xs"></i>
                 </button>
-                <!-- Bouton Admin -->
                 <button onclick="openAdminModal()" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-300 bg-slate-700/50 hover:bg-slate-700 rounded-xl transition">
                     <i class="fa-solid fa-lock text-blue-400"></i> <span class="hidden sm:inline">Admin</span>
                 </button>
@@ -190,13 +188,16 @@
             <!-- Écran Panel -->
             <div id="adminPanel" class="hidden p-5 overflow-y-auto space-y-5 flex-1">
                 
-                <div class="bg-blue-950/40 border border-blue-900/50 rounded-xl p-3.5">
-                    <h3 class="text-xs font-bold text-blue-300 uppercase mb-1"><i class="fa-solid fa-code mr-1"></i> Sauvegarde courses.json</h3>
-                    <p class="text-xs text-blue-200/80 mb-2.5">Copie les données pour mettre à jour <code class="bg-blue-900/60 px-1 py-0.5 rounded text-blue-200">courses.json</code> :</p>
-                    <button onclick="copyJsonCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-copy"></i> Copier le contenu JSON
+                <!-- BOUTON VERT SYNCHRO GITHUB DIRECTE -->
+                <div class="bg-emerald-950/40 border border-emerald-900/50 rounded-xl p-3.5 space-y-2.5">
+                    <h3 class="text-xs font-bold text-emerald-300 uppercase flex items-center gap-1.5">
+                        <i class="fa-brands fa-github text-sm"></i> Synchro GitHub Directe
+                    </h3>
+                    <p class="text-xs text-emerald-200/80">Clique sur le bouton pour publier instantanément tes modifications sur le dépôt <code class="bg-emerald-900/60 px-1 rounded">Dgiego38/Nos-Cours</code> :</p>
+                    <button onclick="pushToGitHub()" id="pushBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Publier direct sur GitHub
                     </button>
-                    <span id="copySuccess" class="block text-center text-xs text-emerald-400 font-medium mt-2 hidden">✓ Copié dans le presse-papier !</span>
+                    <span id="pushSuccess" class="block text-center text-xs text-emerald-400 font-medium hidden">✓ Publié et mis à jour sur GitHub avec succès !</span>
                 </div>
 
                 <div class="flex border-b border-slate-800 text-xs font-semibold">
@@ -264,6 +265,7 @@
     <!-- SCRIPT APPLICATION -->
     <script>
         const ADMIN_CODE = "0736"; 
+        const GITHUB_TOKEN = "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";
         let isAuthenticated = false;
         let localVersion = null;
 
@@ -285,22 +287,15 @@
             "Autre": "bg-slate-700/50 text-slate-300 border border-slate-600/30"
         };
 
-        // Chargement anti-cache agressif pour les PWA
         async function loadData(isBackgroundCheck = false) {
             try {
-                // Paramètre aléatoire unique + en-têtes stricts anti-cache
                 const response = await fetch('courses.json?nocache=' + Date.now() + '_' + Math.random(), {
                     cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
+                    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' }
                 });
                 
                 if (response.ok) {
                     const remoteData = await response.json();
-                    
                     if (localVersion === null) {
                         siteData = remoteData;
                         localVersion = remoteData.version || 1;
@@ -320,7 +315,6 @@
             }
         }
 
-        // Fonction pour forcer le rechargement via le bouton rond dans l'en-tête
         function forceReloadData() {
             const icon = document.getElementById('refreshIcon');
             icon.classList.add('fa-spin');
@@ -349,7 +343,62 @@
             renderAll();
         }
 
-        // Vérification automatique toutes les 20 secondes en arrière-plan
+        async function pushToGitHub() {
+            const btn = document.getElementById('pushBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Publication en cours...';
+
+            const repo = "Dgiego38/Nos-Cours";
+            const path = "courses.json";
+            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+            try {
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
+                });
+
+                let sha = "";
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    sha = fileData.sha;
+                }
+
+                siteData.version = (siteData.version || 1) + 1;
+                localVersion = siteData.version;
+                localStorage.setItem('classe_hub_secure_data', JSON.stringify(siteData));
+
+                const jsonString = JSON.stringify(siteData, null, 4);
+                const base64Content = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                }));
+
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: "Mise à jour automatique des données via Admin Hub",
+                        content: base64Content,
+                        sha: sha || undefined
+                    })
+                });
+
+                if (putRes.ok) {
+                    document.getElementById('pushSuccess').classList.remove('hidden');
+                    setTimeout(() => document.getElementById('pushSuccess').classList.add('hidden'), 4000);
+                } else {
+                    const errData = await putRes.json();
+                    alert("Erreur GitHub : " + (errData.message || "Vérifie les accès"));
+                }
+            } catch(e) {
+                alert("Erreur réseau : " + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Publier direct sur GitHub';
+                renderAll();
+            }
+        }
+
         setInterval(() => loadData(true), 20000);
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
@@ -608,15 +657,6 @@
             nList.innerHTML = (siteData.notes && siteData.notes.length) ? '' : '<p class="text-[11px] text-slate-500 italic">Aucune note.</p>';
             (siteData.notes || []).forEach(n => {
                 nList.innerHTML += `<div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700 text-xs"><span class="truncate pr-2 text-slate-300">${n.text}</span><button onclick="deleteNote(${n.id})" class="text-red-400 hover:text-red-300 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
-            });
-        }
-
-        function copyJsonCode() {
-            const codeString = JSON.stringify(siteData, null, 4);
-            navigator.clipboard.writeText(codeString).then(() => {
-                const succ = document.getElementById('copySuccess');
-                succ.classList.remove('hidden');
-                setTimeout(() => succ.classList.add('hidden'), 3000);
             });
         }
 
