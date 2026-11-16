@@ -2,5 +2,11 @@
     "courses": [],
     "homeworks": [],
     "notes": [],
-    "averages": []
+    "averages": [
+        {
+            "subject": "Autre",
+            "value": "13,10"
+        }
+    ],
+    "version": 2
 }
