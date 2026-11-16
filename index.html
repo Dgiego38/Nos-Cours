@@ -48,6 +48,11 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                <!-- Bouton Actualisation Forcée PWA -->
+                <button onclick="forceReloadData()" title="Actualiser" class="p-2.5 text-slate-300 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-xl transition">
+                    <i id="refreshIcon" class="fa-solid fa-rotate-right text-xs"></i>
+                </button>
+                <!-- Bouton Admin -->
                 <button onclick="openAdminModal()" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-300 bg-slate-700/50 hover:bg-slate-700 rounded-xl transition">
                     <i class="fa-solid fa-lock text-blue-400"></i> <span class="hidden sm:inline">Admin</span>
                 </button>
@@ -280,10 +285,19 @@
             "Autre": "bg-slate-700/50 text-slate-300 border border-slate-600/30"
         };
 
-        // Chargement sans cache à l'entrée
+        // Chargement anti-cache agressif pour les PWA
         async function loadData(isBackgroundCheck = false) {
             try {
-                const response = await fetch('courses.json?t=' + Date.now(), { cache: 'no-store' });
+                // Paramètre aléatoire unique + en-têtes stricts anti-cache
+                const response = await fetch('courses.json?nocache=' + Date.now() + '_' + Math.random(), {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
+                
                 if (response.ok) {
                     const remoteData = await response.json();
                     
@@ -293,6 +307,9 @@
                         renderAll();
                     } else if (remoteData.version && remoteData.version > localVersion) {
                         document.getElementById('updateBanner').classList.remove('hidden');
+                    } else if (!isBackgroundCheck) {
+                        siteData = remoteData;
+                        renderAll();
                     }
                 }
             } catch(e) {
@@ -301,6 +318,18 @@
                     renderAll();
                 }
             }
+        }
+
+        // Fonction pour forcer le rechargement via le bouton rond dans l'en-tête
+        function forceReloadData() {
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('fa-spin');
+            loadData(false).then(() => {
+                setTimeout(() => {
+                    icon.classList.remove('fa-spin');
+                    renderAll();
+                }, 500);
+            });
         }
 
         function loadFromLocal() {
@@ -320,7 +349,8 @@
             renderAll();
         }
 
-        setInterval(() => loadData(true), 30000);
+        // Vérification automatique toutes les 20 secondes en arrière-plan
+        setInterval(() => loadData(true), 20000);
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 loadData(true);
@@ -434,7 +464,6 @@
             }
         }
 
-        // Rendu Moyenne Générale
         function renderGeneralAverage() {
             const valEl = document.getElementById('generalAverageValue');
             const dateEl = document.getElementById('generalAverageDate');
@@ -464,7 +493,6 @@
                 document.getElementById('pinError').classList.add('hidden');
                 setTimeout(() => document.getElementById('pinInput').focus(), 100);
             } else {
-                // Pré-remplir le champ moyenne dans l'admin
                 if(siteData.generalAverage && siteData.generalAverage.value !== "-- / 20") {
                     document.getElementById('genAvgInput').value = siteData.generalAverage.value;
                 }
