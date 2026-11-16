@@ -258,7 +258,7 @@
 
     <!-- SCRIPT APPLICATION -->
     <script>
-        const ADMIN_HASH_TARGET = "a60965e6833bda1a7e4b9d0739e1bf064bb66cbb4b9cf4f83ebc2ef503554e28"; 
+        const ADMIN_CODE = "0736"; 
         let isAuthenticated = false;
         let localVersion = null;
 
@@ -280,22 +280,11 @@
             "Autre": "bg-slate-700/50 text-slate-300 border border-slate-600/30"
         };
 
-        async function sha256(message) {
-            // Sécurité robuste gérant aussi les tests locaux en file://
-            try {
-                const msgBuffer = new TextEncoder().encode(message);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            } catch(e) {
-                // Fallback local si crypto.subtle est bloqué hors https
-                return btoa(message); 
-            }
-        }
-
+        // Chargement avec suppression complète du cache à l'entrée
         async function loadData(isBackgroundCheck = false) {
             try {
-                const response = await fetch('courses.json?t=' + Date.now());
+                // Utilisation de cache: 'no-store' et d'un timestamp pour forcer le téléchargement direct du serveur
+                const response = await fetch('courses.json?t=' + Date.now(), { cache: 'no-store' });
                 if (response.ok) {
                     const remoteData = await response.json();
                     
@@ -332,7 +321,8 @@
             renderAll();
         }
 
-        setInterval(() => loadData(true), 60000);
+        // Vérification automatique en arrière-plan toutes les 30 secondes et au retour sur l'app
+        setInterval(() => loadData(true), 30000);
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 loadData(true);
@@ -488,16 +478,16 @@
             document.getElementById('adminModal').classList.add('hidden');
         }
 
-        document.getElementById('pinInput').addEventListener('keyup', async function(e) {
+        document.getElementById('pinInput').addEventListener('keyup', function(e) {
             if (e.key === 'Enter' || this.value.length === 4) {
-                await verifyPin();
+                verifyPin();
             }
         });
 
-        async function verifyPin() {
+        function verifyPin() {
             const val = document.getElementById('pinInput').value;
-            const hashed = await sha256(val);
-            if(hashed === ADMIN_HASH_TARGET) {
+            // Vérification simple en clair sans chiffrement
+            if(val === ADMIN_CODE) {
                 isAuthenticated = true;
                 document.getElementById('pinScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
