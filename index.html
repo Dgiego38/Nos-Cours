@@ -188,12 +188,14 @@
             <!-- Écran Panel -->
             <div id="adminPanel" class="hidden p-5 overflow-y-auto space-y-5 flex-1">
                 
-                <!-- BOUTON VERT SYNCHRO GITHUB DIRECTE -->
+                <!-- CHAMP TOKEN LOCAL (Sécurisé, non envoyé sur GitHub) -->
                 <div class="bg-emerald-950/40 border border-emerald-900/50 rounded-xl p-3.5 space-y-2.5">
                     <h3 class="text-xs font-bold text-emerald-300 uppercase flex items-center gap-1.5">
                         <i class="fa-brands fa-github text-sm"></i> Synchro GitHub Directe
                     </h3>
-                    <p class="text-xs text-emerald-200/80">Clique sur le bouton pour publier instantanément tes modifications sur le dépôt <code class="bg-emerald-900/60 px-1 rounded">Dgiego38/Nos-Cours</code> :</p>
+                    <p class="text-xs text-emerald-200/80">Colle ton nouveau token GitHub (enregistré uniquement sur cet appareil) :</p>
+                    <input type="password" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
+                        class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500">
                     <button onclick="pushToGitHub()" id="pushBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Publier direct sur GitHub
                     </button>
@@ -265,7 +267,6 @@
     <!-- SCRIPT APPLICATION -->
     <script>
         const ADMIN_CODE = "0736"; 
-        const GITHUB_TOKEN = "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";
         let isAuthenticated = false;
         let localVersion = null;
 
@@ -343,7 +344,19 @@
             renderAll();
         }
 
+        // Publication automatique via le token stocké localement
         async function pushToGitHub() {
+            const tokenInput = document.getElementById('githubTokenInput').value.trim();
+            if(tokenInput) {
+                localStorage.setItem('github_token_cache', tokenInput);
+            }
+            
+            const token = localStorage.getItem('github_token_cache');
+            if(!token) {
+                alert("Entre ton token GitHub dans le champ dédié !");
+                return;
+            }
+
             const btn = document.getElementById('pushBtn');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Publication en cours...';
 
@@ -353,7 +366,7 @@
 
             try {
                 const getRes = await fetch(url, {
-                    headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 let sha = "";
@@ -374,7 +387,7 @@
                 const putRes = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -389,7 +402,7 @@
                     setTimeout(() => document.getElementById('pushSuccess').classList.add('hidden'), 4000);
                 } else {
                     const errData = await putRes.json();
-                    alert("Erreur GitHub : " + (errData.message || "Vérifie les accès"));
+                    alert("Erreur GitHub : " + (errData.message || "Vérifie ton token"));
                 }
             } catch(e) {
                 alert("Erreur réseau : " + e.message);
@@ -398,6 +411,14 @@
                 renderAll();
             }
         }
+
+        // Charger le token enregistré localement au démarrage de la modale
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedToken = localStorage.getItem('github_token_cache');
+            if(savedToken) {
+                document.getElementById('githubTokenInput').value = savedToken;
+            }
+        });
 
         setInterval(() => loadData(true), 20000);
         document.addEventListener("visibilitychange", () => {
