@@ -1,6 +1,19 @@
 {
     "courses": [],
-    "homeworks": [],
+    "homeworks": [
+        {
+            "id": 1794830413846,
+            "title": "recopier le bilan à la suite du cours :  Bilan : La levure prélève du dioxygène (O2) et du glucose (C6H12O6) dans le milieu extérieur et rejette du dioxyde de carbone (CO2). Ces échanges traduisent l’existence d’un métabolisme&nbsp;: la respiration cellulaire. Les levures sont des organismes hétérotrophes, il s’agit d’un organisme utilisant de la matière organique (exemple glucose), prélevée dans le milieu extérieur pour produire leur propre matière organique et fabriquer de l’énergie assurant le bon fonctionnement de la cellule. La respiration cellulaire se déroule dans un organite particulier&nbsp;: la mitochondrie.",
+            "subject": "SVT",
+            "date": "20/11/2026"
+        },
+        {
+            "id": 1794830389197,
+            "title": "Faire le plan (ordre + logique) avec les idées regroupées en cours",
+            "subject": "Français",
+            "date": "17/11/2026"
+        }
+    ],
     "notes": [],
     "averages": [
         {
@@ -8,7 +21,7 @@
             "value": "13,10"
         }
     ],
-    "version": 3,
+    "version": 5,
     "generalAverage": {
         "value": "13,10",
         "updatedAt": "16 nov. 2026"
