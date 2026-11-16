@@ -1,10 +1,6 @@
-[
-  {
-    "id": 1794828749507,
-    "title": "Test",
-    "subject": "Maths",
-    "type": "PDF",
-    "link": "A",
-    "date": "16 nov. 2026"
-  }
-]
+{
+    "courses": [],
+    "homeworks": [],
+    "notes": [],
+    "averages": []
+}
