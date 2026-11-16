@@ -3,169 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cours de la Classe</title>
+    <title>Espace de la Classe</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
     <!-- En-tête -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">📚 Cours de la Classe</h1>
-                    <p class="text-sm text-slate-500">Fiches, PDF et prises de notes partagées</p>
-                </div>
-                <!-- Bouton Admin Mobile -->
-                <button onclick="openAdminModal()" class="sm:hidden p-2.5 text-slate-500 hover:text-slate-900 bg-slate-100 rounded-lg">
-                    <i class="fa-solid fa-lock"></i>
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Bouton Hamburger Mobile -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-600 hover:text-slate-900 bg-slate-100 rounded-lg">
+                    <i class="fa-solid fa-bars text-lg"></i>
                 </button>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">📚 Classe Hub</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Cours, devoirs et infos de la classe</p>
+                </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-                <!-- Barre de recherche -->
-                <div class="relative flex-1 sm:w-72">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" id="searchInput" placeholder="Rechercher un chapitre..." 
-                        class="w-full pl-9 pr-4 py-2 bg-slate-100 border border-transparent rounded-lg text-sm focus:bg-white focus:border-blue-500 focus:outline-none transition">
-                </div>
-                <!-- Bouton Admin Desktop -->
-                <button onclick="openAdminModal()" title="Espace Admin"
-                    class="hidden sm:flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
-                    <i class="fa-solid fa-lock text-xs"></i> Admin
+            <!-- Navigation Desktop -->
+            <nav class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                <button onclick="switchTab('courses')" id="nav-courses" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium bg-white text-slate-900 shadow-sm transition">Cours</button>
+                <button onclick="switchTab('homework')" id="nav-homework" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 transition">Devoirs</button>
+                <button onclick="switchTab('notes')" id="nav-notes" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 transition">Pense-bête</button>
+                <button onclick="switchTab('averages')" id="nav-averages" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 transition">Moyennes</button>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <!-- Bouton Admin -->
+                <button onclick="openAdminModal()" class="flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                    <i class="fa-solid fa-lock text-xs text-blue-600"></i> <span class="hidden sm:inline">Admin</span>
                 </button>
             </div>
+        </div>
+
+        <!-- Menu Hamburger Déroulant (Mobile) -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-slate-200 px-4 py-3 space-y-1">
+            <button onclick="switchTab('courses'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-book mr-2 text-blue-500"></i> Cours</button>
+            <button onclick="switchTab('homework'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-calendar-check mr-2 text-purple-500"></i> Devoirs</button>
+            <button onclick="switchTab('notes'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-note-sticky mr-2 text-amber-500"></i> Pense-bête</button>
+            <button onclick="switchTab('averages'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-chart-pie mr-2 text-emerald-500"></i> Moyennes de la classe</button>
         </div>
     </header>
 
-    <!-- Contenu principal -->
+    <!-- Contenu Principal -->
     <main class="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">
         
-        <!-- Filtres par matière -->
-        <div class="flex flex-wrap gap-2 mb-6" id="filterButtons">
-            <button onclick="filterCourses('all')" class="filter-btn active px-4 py-1.5 rounded-full text-sm font-medium bg-slate-900 text-white transition">Tout</button>
-            <button onclick="filterCourses('Maths')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Maths</button>
-            <button onclick="filterCourses('Physique-Chimie')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Physique-Chimie</button>
-            <button onclick="filterCourses('Histoire-Géo')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Histoire-Géo</button>
-            <button onclick="filterCourses('Français')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Français</button>
-            <button onclick="filterCourses('SVT')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">SVT</button>
-            <button onclick="filterCourses('Anglais')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Anglais</button>
-            <button onclick="filterCourses('Autre')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Autre</button>
+        <!-- ================= VUE 1 : COURS ================= -->
+        <div id="view-courses" class="tab-view">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Fichiers & Cours partagés</h2>
+                <!-- Barre de recherche -->
+                <div class="relative w-full sm:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher un cours..." 
+                        class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:border-blue-500 focus:outline-none transition shadow-sm">
+                </div>
+            </div>
+
+            <!-- Filtres par matière -->
+            <div class="flex flex-wrap gap-2 mb-6" id="filterButtons">
+                <button onclick="filterCourses('all')" class="filter-btn active px-4 py-1.5 rounded-full text-sm font-medium bg-slate-900 text-white transition">Tout</button>
+                <button onclick="filterCourses('Maths')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Maths</button>
+                <button onclick="filterCourses('Physique-Chimie')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Physique-Chimie</button>
+                <button onclick="filterCourses('Histoire-Géo')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Histoire-Géo</button>
+                <button onclick="filterCourses('Français')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Français</button>
+                <button onclick="filterCourses('SVT')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">SVT</button>
+                <button onclick="filterCourses('Anglais')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Anglais</button>
+                <button onclick="filterCourses('Autre')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Autre</button>
+            </div>
+
+            <!-- Grille des cours -->
+            <div id="coursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="noCourses" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                <i class="fa-regular fa-folder-open text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-600 font-medium">Aucun cours disponible</p>
+            </div>
         </div>
 
-        <!-- Grille des cours -->
-        <div id="coursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-        <!-- Message si aucun cours -->
-        <div id="noResults" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
-            <i class="fa-regular fa-folder-open text-4xl text-slate-300 mb-3"></i>
-            <p class="text-slate-600 font-medium">Aucun cours disponible pour le moment</p>
-            <p class="text-slate-400 text-sm mt-1">Connecte-toi au panel Admin pour ajouter le premier cours.</p>
+        <!-- ================= VUE 2 : DEVOIRS ================= -->
+        <div id="view-homework" class="tab-view hidden">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Devoirs & Évaluations à venir</h2>
+                <p class="text-sm text-slate-500">Ce qu'il ne faut pas oublier pour les prochains jours.</p>
+            </div>
+            <div id="homeworkGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <div id="noHomework" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                <i class="fa-regular fa-calendar-xmark text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-600 font-medium">Aucun devoir pour le moment ! Profite bien.</p>
+            </div>
         </div>
+
+        <!-- ================= VUE 3 : PENSE-BÊTE ================= -->
+        <div id="view-notes" class="tab-view hidden">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Pense-bête & Infos rapides</h2>
+                <p class="text-sm text-slate-500">Petites notes utiles pour toute la classe.</p>
+            </div>
+            <div id="notesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="noNotes" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                <i class="fa-regular fa-note-sticky text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-600 font-medium">Aucune note pour l'instant.</p>
+            </div>
+        </div>
+
+        <!-- ================= VUE 4 : MOYENNES ================= -->
+        <div id="view-averages" class="tab-view hidden">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Moyennes de la classe</h2>
+                <p class="text-sm text-slate-500">Estimations et moyennes générales enregistrées.</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm max-w-2xl">
+                <div id="averagesList" class="divide-y divide-slate-100"></div>
+            </div>
+            <div id="noAverages" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 max-w-2xl">
+                <i class="fa-solid fa-chart-pie text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-600 font-medium">Aucune moyenne renseignée.</p>
+            </div>
+        </div>
+
     </main>
 
-    <!-- MODALE ADMIN -->
+    <!-- ================= MODALE ADMIN (PIN: 0736) ================= -->
     <div id="adminModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
+        <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden">
             
             <!-- Header Modale -->
             <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
                 <h2 class="font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-blue-400"></i> Espace Administration
+                    <i class="fa-solid fa-shield-halved text-blue-400"></i> Panel Administrateur
                 </h2>
                 <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <!-- Écran 1 : Code PIN -->
-            <div id="pinScreen" class="p-6 text-center">
-                <p class="text-sm text-slate-600 mb-4">Entre le code d'accès à 4 chiffres pour gérer les cours :</p>
+            <!-- Écran Code PIN -->
+            <div id="pinScreen" class="p-8 text-center">
+                <p class="text-sm text-slate-600 mb-4">Entre le code admin (0736) :</p>
                 <input type="password" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric"
                     class="w-40 text-center text-2xl tracking-[0.5em] font-bold py-2.5 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:outline-none mb-2">
                 <p id="pinError" class="text-red-500 text-xs hidden mb-3">Code incorrect</p>
-                <div class="mt-4">
-                    <button onclick="verifyPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition">
-                        Déverrouiller
-                    </button>
-                </div>
+                <button onclick="verifyPin()" class="w-full max-w-[160px] bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition">
+                    Valider
+                </button>
             </div>
 
-            <!-- Écran 2 : Gestion des cours (caché avant code) -->
-            <div id="adminPanel" class="hidden p-6 max-h-[80vh] overflow-y-auto">
+            <!-- Écran Gestion Admin -->
+            <div id="adminPanel" class="hidden p-6 max-h-[75vh] overflow-y-auto space-y-6">
                 
-                <!-- Formulaire d'ajout -->
-                <form id="addCourseForm" onsubmit="addCourse(event)" class="space-y-3 mb-6 pb-6 border-b border-slate-200">
-                    <h3 class="font-semibold text-slate-800 text-sm uppercase tracking-wider">Ajouter un nouveau cours</h3>
-                    
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Titre du chapitre / cours</label>
-                        <input type="text" id="courseTitle" required placeholder="Ex: Chapitre 2 : Les vecteurs"
-                            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Matière</label>
-                            <select id="courseSubject" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none bg-white">
-                                <option value="Maths">Maths</option>
-                                <option value="Physique-Chimie">Physique-Chimie</option>
-                                <option value="Histoire-Géo">Histoire-Géo</option>
-                                <option value="Français">Français</option>
-                                <option value="SVT">SVT</option>
-                                <option value="Anglais">Anglais</option>
-                                <option value="Autre">Autre</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Format</label>
-                            <select id="courseType" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none bg-white">
-                                <option value="PDF">PDF</option>
-                                <option value="Fiche">Fiche de révision</option>
-                                <option value="Lien / Drive">Lien / Drive</option>
-                                <option value="Exercices">Exercices</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Lien du fichier (chemin GitHub ou URL Drive)</label>
-                        <input type="text" id="courseLink" required placeholder="Ex: cours/maths-vecteurs.pdf ou https://..."
-                            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:outline-none">
-                    </div>
-
-                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-lg text-sm transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Ajouter à la liste
+                <!-- Bouton Copier le code JSON pour GitHub -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <h3 class="text-xs font-bold text-blue-900 uppercase mb-1"><i class="fa-solid fa-code mr-1"></i> Mise à jour GitHub Pages</h3>
+                    <p class="text-xs text-blue-700 mb-3">Quand tu ajoutes/supprimes des éléments, clique ici pour copier le code de mise à jour à coller dans ton fichier <code class="bg-blue-100 px-1 rounded">index.html</code> :</p>
+                    <button onclick="copyJsonCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-copy"></i> Copier le code des données
                     </button>
-                </form>
-
-                <!-- Synchronisation GitHub Pages -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                    <h4 class="text-xs font-bold text-blue-900 uppercase mb-1">Publier pour toute la classe</h4>
-                    <p class="text-xs text-blue-700 mb-3">
-                        Sur GitHub Pages, télécharge ce fichier et place-le à la racine de ton dépôt GitHub (à côté de <code class="bg-blue-100 px-1 rounded">index.html</code>) pour que tout le monde voie tes ajouts :
-                    </p>
-                    <button onclick="exportJSON()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-xs transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-download"></i> Télécharger courses.json
-                    </button>
+                    <span id="copySuccess" class="block text-center text-xs text-emerald-600 font-medium mt-2 hidden">✓ Copié dans le presse-papier !</span>
                 </div>
 
-                <!-- Liste pour supprimer -->
-                <div>
-                    <h3 class="font-semibold text-slate-800 text-sm uppercase tracking-wider mb-3">Cours enregistrés (<span id="adminCount">0</span>)</h3>
-                    <div id="adminCourseList" class="space-y-2"></div>
+                <!-- Onglets du panel admin -->
+                <div class="flex border-b border-slate-200 text-sm font-medium">
+                    <button onclick="switchAdminTab('courses')" id="adm-tab-courses" class="admin-tab pb-2 px-3 border-b-2 border-blue-600 text-blue-600">Cours</button>
+                    <button onclick="switchAdminTab('homework')" id="adm-tab-homework" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800">Devoirs</button>
+                    <button onclick="switchAdminTab('notes')" id="adm-tab-notes" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800">Pense-bête</button>
+                    <button onclick="switchAdminTab('averages')" id="adm-tab-averages" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800">Moyennes</button>
+                </div>
+
+                <!-- FORMULAIRE COURS -->
+                <div id="adm-content-courses" class="admin-content space-y-3">
+                    <form onsubmit="addCourse(event)" class="space-y-3 pb-4 border-b border-slate-200">
+                        <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider">Ajouter un cours</h4>
+                        <input type="text" id="cTitle" required placeholder="Titre du chapitre..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="cSubject" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="Maths">Maths</option><option value="Physique-Chimie">Physique-Chimie</option><option value="Histoire-Géo">Histoire-Géo</option><option value="Français">Français</option><option value="SVT">SVT</option><option value="Anglais">Anglais</option><option value="Autre">Autre</option>
+                            </select>
+                            <select id="cType" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="PDF">PDF</option><option value="Fiche">Fiche</option><option value="Lien / Drive">Lien / Drive</option><option value="Exercices">Exercices</option>
+                            </select>
+                        </div>
+                        <input type="text" id="cLink" required placeholder="Lien (ex: cours/maths.pdf ou URL)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Ajouter le cours</button>
+                    </form>
+                    <div id="adminCoursesList" class="space-y-2"></div>
+                </div>
+
+                <!-- FORMULAIRE DEVOIRS -->
+                <div id="adm-content-homework" class="admin-content hidden space-y-3">
+                    <form onsubmit="addHomework(event)" class="space-y-3 pb-4 border-b border-slate-200">
+                        <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider">Ajouter un devoir</h4>
+                        <input type="text" id="hwTitle" required placeholder="Intitulé du devoir / contrôle..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="hwSubject" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="Maths">Maths</option><option value="Physique-Chimie">Physique-Chimie</option><option value="Histoire-Géo">Histoire-Géo</option><option value="Français">Français</option><option value="SVT">SVT</option><option value="Anglais">Anglais</option><option value="Autre">Autre</option>
+                            </select>
+                            <input type="text" id="hwDate" required placeholder="Date limite (ex: 20 Nov)" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Ajouter le devoir</button>
+                    </form>
+                    <div id="adminHomeworkList" class="space-y-2"></div>
+                </div>
+
+                <!-- FORMULAIRE PENSE-BÊTE -->
+                <div id="adm-content-notes" class="admin-content hidden space-y-3">
+                    <form onsubmit="addNote(event)" class="space-y-3 pb-4 border-b border-slate-200">
+                        <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider">Ajouter une note</h4>
+                        <textarea id="noteText" required rows="2" placeholder="Écris ton rappel ici..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"></textarea>
+                        <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Ajouter la note</button>
+                    </form>
+                    <div id="adminNotesList" class="space-y-2"></div>
+                </div>
+
+                <!-- FORMULAIRE MOYENNES -->
+                <div id="adm-content-averages" class="admin-content hidden space-y-3">
+                    <form onsubmit="addAverage(event)" class="space-y-3 pb-4 border-b border-slate-200">
+                        <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider">Mettre à jour une moyenne</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="avgSubject" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="Maths">Maths</option><option value="Physique-Chimie">Physique-Chimie</option><option value="Histoire-Géo">Histoire-Géo</option><option value="Français">Français</option><option value="SVT">SVT</option><option value="Anglais">Anglais</option><option value="Autre">Autre</option>
+                            </select>
+                            <input type="text" id="avgValue" required placeholder="Moyenne (ex: 14.5 / 20)" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Enregistrer la moyenne</button>
+                    </form>
+                    <div id="adminAveragesList" class="space-y-2"></div>
                 </div>
 
             </div>
         </div>
     </div>
 
+    <!-- ================= JAVASCRIPT ================= -->
     <script>
         const ADMIN_CODE = "0736";
-        let courses = [];
-        let currentSubject = 'all';
         let isAuthenticated = false;
+
+        // ==========================================
+        // 👇 DONNÉES DE LA CLASSE (Modifiables ici ou via Admin) 👇
+        // ==========================================
+        let siteData = {
+            courses: [
+                { id: 1, title: "Exemple : Chapitre 1 Fonctions", subject: "Maths", type: "PDF", link: "#", date: "14 Nov. 2026" }
+            ],
+            homeworks: [
+                { id: 1, title: "Exemple : Exercices de géométrie p.42", subject: "Maths", date: "22 Nov." }
+            ],
+            notes: [
+                { id: 1, text: "Exemple : Penser à ramener le matériel de physique." }
+            ],
+            averages: [
+                { subject: "Maths", value: "14.2 / 20" },
+                { subject: "Physique-Chimie", value: "13.8 / 20" },
+                { subject: "Français", value: "15.0 / 20" }
+            ]
+        };
 
         const subjectColors = {
             "Maths": "bg-blue-100 text-blue-700",
@@ -177,80 +271,77 @@
             "Autre": "bg-slate-200 text-slate-700"
         };
 
-        // Chargement initial : essaie de lire courses.json sur GitHub, sinon localStorage
-        async function initCourses() {
-            try {
-                const response = await fetch('courses.json?t=' + Date.now());
-                if (response.ok) {
-                    const remoteCourses = await response.json();
-                    courses = remoteCourses;
-                    localStorage.setItem('classe_courses', JSON.stringify(courses));
-                } else {
-                    loadFromLocal();
-                }
-            } catch (e) {
-                loadFromLocal();
+        // Chargement localStorage si présent
+        function loadData() {
+            const saved = localStorage.getItem('classe_hub_data');
+            if (saved) {
+                try { siteData = JSON.parse(saved); } catch(e) {}
             }
-            renderCourses();
         }
 
-        function loadFromLocal() {
-            const saved = localStorage.getItem('classe_courses');
-            courses = saved ? JSON.parse(saved) : [];
+        function saveData() {
+            localStorage.setItem('classe_hub_data', JSON.stringify(siteData));
+            renderAll();
         }
 
-        function saveToLocal() {
-            localStorage.setItem('classe_courses', JSON.stringify(courses));
-            renderCourses();
-            renderAdminList();
+        // Navigation onglets principaux
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + tabName).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 transition";
+            });
+            const activeBtn = document.getElementById('nav-' + tabName);
+            if(activeBtn) activeBtn.className = "nav-btn px-4 py-1.5 rounded-lg text-sm font-medium bg-white text-slate-900 shadow-sm transition";
         }
 
-        // Affichage des cartes
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Rendu des Cours
+        let currentSubject = 'all';
         function renderCourses() {
             const grid = document.getElementById('coursesGrid');
-            const noResults = document.getElementById('noResults');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
+            const noRes = document.getElementById('noCourses');
+            const term = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = '';
 
-            const filtered = courses.filter(course => {
-                const matchesSubject = currentSubject === 'all' || course.subject === currentSubject;
-                const matchesSearch = course.title.toLowerCase().includes(searchTerm) || course.subject.toLowerCase().includes(searchTerm);
-                return matchesSubject && matchesSearch;
+            const filtered = siteData.courses.filter(c => {
+                const matchSub = currentSubject === 'all' || c.subject === currentSubject;
+                const matchSearch = c.title.toLowerCase().includes(term) || c.subject.toLowerCase().includes(term);
+                return matchSub && matchSearch;
             });
 
-            if (filtered.length === 0) {
-                noResults.classList.remove('hidden');
+            if(filtered.length === 0) {
+                noRes.classList.remove('hidden');
             } else {
-                noResults.classList.add('hidden');
-                filtered.forEach(course => {
-                    const badgeColor = subjectColors[course.subject] || "bg-slate-100 text-slate-700";
-                    const card = `
-                        <a href="${course.link}" target="_blank" class="group block bg-white p-5 rounded-xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition">
+                noRes.classList.add('hidden');
+                filtered.forEach(c => {
+                    const badge = subjectColors[c.subject] || "bg-slate-100 text-slate-700";
+                    grid.innerHTML += `
+                        <a href="${c.link}" target="_blank" class="group block bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition">
                             <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md ${badgeColor}">
-                                    ${course.subject}
-                                </span>
-                                <span class="text-xs text-slate-400">${course.date}</span>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md ${badge}">${c.subject}</span>
+                                <span class="text-xs text-slate-400">${c.date}</span>
                             </div>
-                            <h2 class="font-semibold text-slate-800 group-hover:text-blue-600 transition mb-4 line-clamp-2">
-                                ${course.title}
-                            </h2>
+                            <h3 class="font-semibold text-slate-800 group-hover:text-blue-600 transition mb-4 line-clamp-2">${c.title}</h3>
                             <div class="flex items-center justify-between text-xs font-medium text-slate-500 pt-3 border-t border-slate-100">
-                                <span><i class="fa-regular fa-file-lines mr-1.5 text-blue-500"></i>${course.type}</span>
+                                <span><i class="fa-regular fa-file-lines mr-1.5 text-blue-500"></i>${c.type}</span>
                                 <span class="text-blue-600 group-hover:translate-x-1 transition-transform">Ouvrir →</span>
                             </div>
                         </a>
                     `;
-                    grid.innerHTML += card;
                 });
             }
         }
 
-        function filterCourses(subject) {
-            currentSubject = subject;
+        function filterCourses(sub) {
+            currentSubject = sub;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.textContent === subject || (subject === 'all' && btn.textContent === 'Tout')) {
+                if (btn.textContent === sub || (sub === 'all' && btn.textContent === 'Tout')) {
                     btn.className = "filter-btn active px-4 py-1.5 rounded-full text-sm font-medium bg-slate-900 text-white transition";
                 } else {
                     btn.className = "filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition";
@@ -259,105 +350,229 @@
             renderCourses();
         }
 
-        // Gestion Modale Admin
-        function openAdminModal() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            if (!isAuthenticated) {
-                document.getElementById('pinInput').value = '';
-                document.getElementById('pinError').classList.add('hidden');
-                setTimeout(() => document.getElementById('pinInput').focus(), 100);
+        // Rendu Devoirs
+        function renderHomework() {
+            const grid = document.getElementById('homeworkGrid');
+            const noRes = document.getElementById('noHomework');
+            grid.innerHTML = '';
+
+            if(siteData.homeworks.length === 0) {
+                noRes.classList.remove('hidden');
             } else {
-                renderAdminList();
+                noRes.classList.add('hidden');
+                siteData.homeworks.forEach(hw => {
+                    const badge = subjectColors[hw.subject] || "bg-slate-100 text-slate-700";
+                    grid.innerHTML += `
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-md ${badge}">${hw.subject}</span>
+                                    <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md"><i class="fa-regular fa-clock mr-1"></i>${hw.date}</span>
+                                </div>
+                                <h3 class="font-semibold text-slate-800 text-base mb-2">${hw.title}</h3>
+                            </div>
+                        </div>
+                    `;
+                });
             }
         }
 
+        // Rendu Pense-bête
+        function renderNotes() {
+            const grid = document.getElementById('notesGrid');
+            const noRes = document.getElementById('noNotes');
+            grid.innerHTML = '';
+
+            if(siteData.notes.length === 0) {
+                noRes.classList.remove('hidden');
+            } else {
+                noRes.classList.add('hidden');
+                siteData.notes.forEach(note => {
+                    grid.innerHTML += `
+                        <div class="bg-amber-50 border border-amber-200 p-5 rounded-2xl text-slate-800 relative shadow-sm">
+                            <i class="fa-solid fa-thumbtack text-amber-500 absolute top-4 right-4 text-sm rotate-45"></i>
+                            <p class="text-sm whitespace-pre-line pr-4">${note.text}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Rendu Moyennes
+        function renderAverages() {
+            const list = document.getElementById('averagesList');
+            const noRes = document.getElementById('noAverages');
+            list.innerHTML = '';
+
+            if(siteData.averages.length === 0) {
+                noRes.classList.add('hidden'); // wait
+                document.getElementById('noAverages').classList.remove('hidden');
+            } else {
+                document.getElementById('noAverages').classList.add('hidden');
+                siteData.averages.forEach(avg => {
+                    const badge = subjectColors[avg.subject] || "bg-slate-100 text-slate-700";
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between px-6 py-4">
+                            <span class="text-sm font-semibold px-3 py-1 rounded-md ${badge}">${avg.subject}</span>
+                            <span class="text-base font-bold text-slate-900">${avg.value}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function renderAll() {
+            renderCourses();
+            renderHomework();
+            renderNotes();
+            renderAverages();
+            renderAdminLists();
+        }
+
+        // Gestion Admin
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            if(!isAuthenticated) {
+                document.getElementById('pinInput').value = '';
+                document.getElementById('pinError').classList.add('hidden');
+                setTimeout(() => document.getElementById('pinInput').focus(), 100);
+            }
+        }
         function closeAdminModal() {
             document.getElementById('adminModal').classList.add('hidden');
         }
 
-        document.getElementById('pinInput').addEventListener('keyup', function(e) {
-            if (e.key === 'Enter' || this.value.length === 4) {
-                verifyPin();
-            }
-        });
-
         function verifyPin() {
-            const entered = document.getElementById('pinInput').value;
-            if (entered === ADMIN_CODE) {
+            if(document.getElementById('pinInput').value === ADMIN_CODE) {
                 isAuthenticated = true;
                 document.getElementById('pinScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
-                renderAdminList();
+                renderAdminLists();
             } else {
                 document.getElementById('pinError').classList.remove('hidden');
                 document.getElementById('pinInput').value = '';
             }
         }
 
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('adm-content-' + tab).classList.remove('hidden');
+
+            document.querySelectorAll('.admin-tab').forEach(t => {
+                t.className = "admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800";
+            });
+            document.getElementById('adm-tab-' + tab).className = "admin-tab pb-2 px-3 border-b-2 border-blue-600 text-blue-600 font-semibold";
+        }
+
+        // Ajouts / Suppressions Admin
         function addCourse(e) {
             e.preventDefault();
-            const title = document.getElementById('courseTitle').value.trim();
-            const subject = document.getElementById('courseSubject').value;
-            const type = document.getElementById('courseType').value;
-            const link = document.getElementById('courseLink').value.trim();
+            const title = document.getElementById('cTitle').value.trim();
+            const subject = document.getElementById('cSubject').value;
+            const type = document.getElementById('cType').value;
+            const link = document.getElementById('cLink').value.trim();
+            const date = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 
-            const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-
-            courses.unshift({
-                id: Date.now(),
-                title,
-                subject,
-                type,
-                link,
-                date: today
-            });
-
-            saveToLocal();
-            document.getElementById('addCourseForm').reset();
+            siteData.courses.unshift({ id: Date.now(), title, subject, type, link, date });
+            saveData();
+            e.target.reset();
         }
-
         function deleteCourse(id) {
-            courses = courses.filter(c => c.id !== id);
-            saveToLocal();
+            siteData.courses = siteData.courses.filter(c => c.id !== id);
+            saveData();
         }
 
-        function renderAdminList() {
-            const list = document.getElementById('adminCourseList');
-            document.getElementById('adminCount').textContent = courses.length;
-            list.innerHTML = '';
+        function addHomework(e) {
+            e.preventDefault();
+            const title = document.getElementById('hwTitle').value.trim();
+            const subject = document.getElementById('hwSubject').value;
+            const date = document.getElementById('hwDate').value.trim();
 
-            if (courses.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 italic">Aucun cours enregistré.</p>';
-                return;
+            siteData.homeworks.unshift({ id: Date.now(), title, subject, date });
+            saveData();
+            e.target.reset();
+        }
+        function deleteHomework(id) {
+            siteData.homeworks = siteData.homeworks.filter(h => h.id !== id);
+            saveData();
+        }
+
+        function addNote(e) {
+            e.preventDefault();
+            const text = document.getElementById('noteText').value.trim();
+            siteData.notes.unshift({ id: Date.now(), text });
+            saveData();
+            e.target.reset();
+        }
+        function deleteNote(id) {
+            siteData.notes = siteData.notes.filter(n => n.id !== id);
+            saveData();
+        }
+
+        function addAverage(e) {
+            e.preventDefault();
+            const subject = document.getElementById('avgSubject').value;
+            const value = document.getElementById('avgValue').value.trim();
+
+            // Remplacer si existe déjà, sinon ajouter
+            const existing = siteData.averages.find(a => a.subject === subject);
+            if(existing) {
+                existing.value = value;
+            } else {
+                siteData.averages.push({ subject, value });
             }
+            saveData();
+            e.target.reset();
+        }
+        function deleteAverage(subject) {
+            siteData.averages = siteData.averages.filter(a => a.subject !== subject);
+            saveData();
+        }
 
-            courses.forEach(course => {
-                list.innerHTML += `
-                    <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs">
-                        <div class="truncate pr-2">
-                            <span class="font-bold text-slate-700">[${course.subject}]</span> ${course.title}
-                        </div>
-                        <button onclick="deleteCourse(${course.id})" class="text-red-500 hover:text-red-700 p-1" title="Supprimer">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `;
+        // Rendu des listes dans le panel admin pour suppression
+        function renderAdminLists() {
+            // Cours
+            const cList = document.getElementById('adminCoursesList');
+            cList.innerHTML = siteData.courses.length ? '' : '<p class="text-xs text-slate-400 italic">Aucun cours.</p>';
+            siteData.courses.forEach(c => {
+                cList.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border text-xs"><span class="truncate pr-2 font-medium">[${c.subject}] ${c.title}</span><button onclick="deleteCourse(${c.id})" class="text-red-500 hover:text-red-700 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
+            });
+
+            // Devoirs
+            const hwList = document.getElementById('adminHomeworkList');
+            hwList.innerHTML = siteData.homeworks.length ? '' : '<p class="text-xs text-slate-400 italic">Aucun devoir.</p>';
+            siteData.homeworks.forEach(h => {
+                hwList.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border text-xs"><span class="truncate pr-2 font-medium">[${h.subject}] ${h.title} (${h.date})</span><button onclick="deleteHomework(${h.id})" class="text-red-500 hover:text-red-700 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
+            });
+
+            // Notes
+            const nList = document.getElementById('adminNotesList');
+            nList.innerHTML = siteData.notes.length ? '' : '<p class="text-xs text-slate-400 italic">Aucune note.</p>';
+            siteData.notes.forEach(n => {
+                nList.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border text-xs"><span class="truncate pr-2 font-medium">${n.text}</span><button onclick="deleteNote(${n.id})" class="text-red-500 hover:text-red-700 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
+            });
+
+            // Moyennes
+            const aList = document.getElementById('adminAveragesList');
+            aList.innerHTML = siteData.averages.length ? '' : '<p class="text-xs text-slate-400 italic">Aucune moyenne.</p>';
+            siteData.averages.forEach(a => {
+                aList.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border text-xs"><span class="font-medium">${a.subject} : ${a.value}</span><button onclick="deleteAverage('${a.subject}')" class="text-red-500 hover:text-red-700 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
             });
         }
 
-        // Exportation du fichier JSON pour GitHub
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(courses, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "courses.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+        // Copier le code JSON pour GitHub
+        function copyJsonCode() {
+            const codeString = JSON.stringify(siteData, null, 4);
+            navigator.clipboard.writeText(codeString).then(() => {
+                const succ = document.getElementById('copySuccess');
+                succ.classList.remove('hidden');
+                setTimeout(() => succ.classList.add('hidden'), 3000);
+            });
         }
 
         document.getElementById('searchInput').addEventListener('input', renderCourses);
-        initCourses();
+        loadData();
+        renderAll();
     </script>
 </body>
 </html>
