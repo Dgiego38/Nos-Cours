@@ -44,7 +44,7 @@
                 <button onclick="switchTab('courses')" id="nav-courses" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-sm transition">Cours</button>
                 <button onclick="switchTab('homework')" id="nav-homework" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Devoirs</button>
                 <button onclick="switchTab('notes')" id="nav-notes" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Pense-bête</button>
-                <button onclick="switchTab('averages')" id="nav-averages" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Moyennes</button>
+                <button onclick="switchTab('averages')" id="nav-averages" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Moyenne générale</button>
             </nav>
 
             <div class="flex items-center gap-2">
@@ -59,7 +59,7 @@
             <button onclick="switchTab('courses'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-book mr-2.5 text-blue-400"></i> Cours</button>
             <button onclick="switchTab('homework'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-calendar-check mr-2.5 text-purple-400"></i> Devoirs</button>
             <button onclick="switchTab('notes'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-note-sticky mr-2.5 text-amber-400"></i> Pense-bête</button>
-            <button onclick="switchTab('averages'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-chart-pie mr-2.5 text-emerald-400"></i> Moyennes de la classe</button>
+            <button onclick="switchTab('averages'); toggleMobileMenu()" class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-slate-700/50"><i class="fa-solid fa-chart-pie mr-2.5 text-emerald-400"></i> Moyenne générale</button>
         </div>
     </header>
 
@@ -121,18 +121,20 @@
             </div>
         </div>
 
-        <!-- MOYENNES -->
+        <!-- MOYENNE GÉNÉRALE -->
         <div id="view-averages" class="tab-view hidden space-y-4">
             <div>
-                <h2 class="text-xl font-bold text-white tracking-tight">Moyennes de la classe</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Aperçu global par matière.</p>
+                <h2 class="text-xl font-bold text-white tracking-tight">Moyenne générale de la classe</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Indicateur global mis à jour régulièrement.</p>
             </div>
-            <div class="bg-slate-800/80 rounded-2xl border border-slate-700/80 overflow-hidden shadow-lg max-w-xl">
-                <div id="averagesList" class="divide-y divide-slate-700/50"></div>
-            </div>
-            <div id="noAverages" class="hidden text-center py-16 bg-slate-800/40 rounded-2xl border border-dashed border-slate-700 max-w-xl">
-                <i class="fa-solid fa-chart-pie text-3xl text-slate-600 mb-2"></i>
-                <p class="text-slate-400 text-xs font-medium">Aucune moyenne renseignée.</p>
+            
+            <div id="generalAverageCard" class="bg-slate-800/80 rounded-2xl border border-slate-700/80 p-8 shadow-lg max-w-md text-center">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 text-xl">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Moyenne Générale</p>
+                <div id="generalAverageValue" class="text-4xl font-extrabold text-white tracking-tight my-2">-- / 20</div>
+                <p id="generalAverageDate" class="text-[11px] text-slate-500 mt-2">Non renseignée</p>
             </div>
         </div>
 
@@ -196,10 +198,10 @@
                     <button onclick="switchAdminTab('courses')" id="adm-tab-courses" class="admin-tab pb-2 px-3 border-b-2 border-blue-500 text-blue-400">Cours</button>
                     <button onclick="switchAdminTab('homework')" id="adm-tab-homework" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Devoirs</button>
                     <button onclick="switchAdminTab('notes')" id="adm-tab-notes" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Notes</button>
-                    <button onclick="switchAdminTab('averages')" id="adm-tab-averages" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Moyennes</button>
+                    <button onclick="switchAdminTab('averages')" id="adm-tab-averages" class="admin-tab pb-2 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Moyenne</button>
                 </div>
 
-                <!-- FORMULAIRES -->
+                <!-- FORMULAIRE COURS -->
                 <div id="adm-content-courses" class="admin-content space-y-3">
                     <form onsubmit="addCourse(event)" class="space-y-2.5 pb-4 border-b border-slate-800">
                         <input type="text" id="cTitle" required placeholder="Titre du cours..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-blue-500">
@@ -217,6 +219,7 @@
                     <div id="adminCoursesList" class="space-y-1.5"></div>
                 </div>
 
+                <!-- FORMULAIRE DEVOIRS -->
                 <div id="adm-content-homework" class="admin-content hidden space-y-3">
                     <form onsubmit="addHomework(event)" class="space-y-2.5 pb-4 border-b border-slate-800">
                         <input type="text" id="hwTitle" required placeholder="Intitulé du devoir..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-blue-500">
@@ -231,6 +234,7 @@
                     <div id="adminHomeworkList" class="space-y-1.5"></div>
                 </div>
 
+                <!-- FORMULAIRE PENSE-BÊTE -->
                 <div id="adm-content-notes" class="admin-content hidden space-y-3">
                     <form onsubmit="addNote(event)" class="space-y-2.5 pb-4 border-b border-slate-800">
                         <textarea id="noteText" required rows="2" placeholder="Écrire un rappel..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-blue-500"></textarea>
@@ -239,17 +243,13 @@
                     <div id="adminNotesList" class="space-y-1.5"></div>
                 </div>
 
+                <!-- FORMULAIRE MOYENNE GÉNÉRALE -->
                 <div id="adm-content-averages" class="admin-content hidden space-y-3">
-                    <form onsubmit="addAverage(event)" class="space-y-2.5 pb-4 border-b border-slate-800">
-                        <div class="grid grid-cols-2 gap-2">
-                            <select id="avgSubject" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white">
-                                <option value="Maths">Maths</option><option value="Physique-Chimie">Physique-Chimie</option><option value="Histoire-Géo">Histoire-Géo</option><option value="Français">Français</option><option value="SVT">SVT</option><option value="Anglais">Anglais</option><option value="Autre">Autre</option>
-                            </select>
-                            <input type="text" id="avgValue" required placeholder="Moyenne (ex: 14.5)" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-blue-500">
-                        </div>
-                        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white py-2 rounded-lg text-xs font-medium transition">Enregistrer</button>
+                    <form onsubmit="saveGeneralAverage(event)" class="space-y-3">
+                        <label class="block text-xs text-slate-400">Moyenne générale de la classe :</label>
+                        <input type="text" id="genAvgInput" required placeholder="Ex: 13.85 / 20" class="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-white focus:outline-none focus:border-blue-500">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-medium transition">Mettre à jour la moyenne</button>
                     </form>
-                    <div id="adminAveragesList" class="space-y-1.5"></div>
                 </div>
 
             </div>
@@ -267,7 +267,7 @@
             courses: [],
             homeworks: [],
             notes: [],
-            averages: []
+            generalAverage: { value: "-- / 20", updatedAt: "" }
         };
 
         const subjectColors = {
@@ -280,10 +280,9 @@
             "Autre": "bg-slate-700/50 text-slate-300 border border-slate-600/30"
         };
 
-        // Chargement avec suppression complète du cache à l'entrée
+        // Chargement sans cache à l'entrée
         async function loadData(isBackgroundCheck = false) {
             try {
-                // Utilisation de cache: 'no-store' et d'un timestamp pour forcer le téléchargement direct du serveur
                 const response = await fetch('courses.json?t=' + Date.now(), { cache: 'no-store' });
                 if (response.ok) {
                     const remoteData = await response.json();
@@ -321,7 +320,6 @@
             renderAll();
         }
 
-        // Vérification automatique en arrière-plan toutes les 30 secondes et au retour sur l'app
         setInterval(() => loadData(true), 30000);
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
@@ -436,24 +434,18 @@
             }
         }
 
-        function renderAverages() {
-            const list = document.getElementById('averagesList');
-            const noRes = document.getElementById('noAverages');
-            list.innerHTML = '';
+        // Rendu Moyenne Générale
+        function renderGeneralAverage() {
+            const valEl = document.getElementById('generalAverageValue');
+            const dateEl = document.getElementById('generalAverageDate');
+            const avg = siteData.generalAverage;
 
-            if(!siteData.averages || siteData.averages.length === 0) {
-                noRes.classList.remove('hidden');
+            if (avg && avg.value && avg.value !== "-- / 20") {
+                valEl.textContent = avg.value;
+                dateEl.textContent = avg.updatedAt ? `Mis à jour le ${avg.updatedAt}` : "À jour";
             } else {
-                noRes.classList.add('hidden');
-                siteData.averages.forEach(avg => {
-                    const badge = subjectColors[avg.subject] || subjectColors["Autre"];
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between px-5 py-3.5">
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-md ${badge}">${avg.subject}</span>
-                            <span class="text-sm font-extrabold text-white">${avg.value}</span>
-                        </div>
-                    `;
-                });
+                valEl.textContent = "-- / 20";
+                dateEl.textContent = "Non renseignée";
             }
         }
 
@@ -461,7 +453,7 @@
             renderCourses();
             renderHomework();
             renderNotes();
-            renderAverages();
+            renderGeneralAverage();
             renderAdminLists();
         }
 
@@ -471,6 +463,11 @@
                 document.getElementById('pinInput').value = '';
                 document.getElementById('pinError').classList.add('hidden');
                 setTimeout(() => document.getElementById('pinInput').focus(), 100);
+            } else {
+                // Pré-remplir le champ moyenne dans l'admin
+                if(siteData.generalAverage && siteData.generalAverage.value !== "-- / 20") {
+                    document.getElementById('genAvgInput').value = siteData.generalAverage.value;
+                }
             }
         }
 
@@ -486,11 +483,13 @@
 
         function verifyPin() {
             const val = document.getElementById('pinInput').value;
-            // Vérification simple en clair sans chiffrement
             if(val === ADMIN_CODE) {
                 isAuthenticated = true;
                 document.getElementById('pinScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
+                if(siteData.generalAverage && siteData.generalAverage.value !== "-- / 20") {
+                    document.getElementById('genAvgInput').value = siteData.generalAverage.value;
+                }
                 renderAdminLists();
             } else {
                 document.getElementById('pinError').classList.remove('hidden');
@@ -555,24 +554,13 @@
             saveData();
         }
 
-        function addAverage(e) {
+        function saveGeneralAverage(e) {
             e.preventDefault();
-            const subject = document.getElementById('avgSubject').value;
-            const value = document.getElementById('avgValue').value.trim();
-
-            if(!siteData.averages) siteData.averages = [];
-            const existing = siteData.averages.find(a => a.subject === subject);
-            if(existing) {
-                existing.value = value;
-            } else {
-                siteData.averages.push({ subject, value });
-            }
+            const val = document.getElementById('genAvgInput').value.trim();
+            const date = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+            siteData.generalAverage = { value: val, updatedAt: date };
             saveData();
-            e.target.reset();
-        }
-        function deleteAverage(subject) {
-            siteData.averages = siteData.averages.filter(a => a.subject !== subject);
-            saveData();
+            alert("Moyenne générale mise à jour !");
         }
 
         function renderAdminLists() {
@@ -592,12 +580,6 @@
             nList.innerHTML = (siteData.notes && siteData.notes.length) ? '' : '<p class="text-[11px] text-slate-500 italic">Aucune note.</p>';
             (siteData.notes || []).forEach(n => {
                 nList.innerHTML += `<div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700 text-xs"><span class="truncate pr-2 text-slate-300">${n.text}</span><button onclick="deleteNote(${n.id})" class="text-red-400 hover:text-red-300 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
-            });
-
-            const aList = document.getElementById('adminAveragesList');
-            aList.innerHTML = (siteData.averages && siteData.averages.length) ? '' : '<p class="text-[11px] text-slate-500 italic">Aucune moyenne.</p>';
-            (siteData.averages || []).forEach(a => {
-                aList.innerHTML += `<div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700 text-xs"><span class="text-slate-300">${a.subject} : ${a.value}</span><button onclick="deleteAverage('${a.subject}')" class="text-red-400 hover:text-red-300 px-2"><i class="fa-solid fa-trash"></i></button></div>`;
             });
         }
 
