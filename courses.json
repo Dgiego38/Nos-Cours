@@ -1,5 +1,14 @@
 {
-    "courses": [],
+    "courses": [
+        {
+            "id": 1794830580197,
+            "title": "Theme 1 : La santé",
+            "subject": "SVT",
+            "type": "PDF",
+            "link": "https://0670080y.index-education.net/pronote/FichiersExternes/ed4f2a8040b109d10617071a7c2dad1f1d4af3e8aec3726beabf5a75d27014406b6bd5bff4b4113b959dcb050a979d8781cd496f9d621f421e04ca9fe73f37b508eaa513eaa73c57e01fd955cfe37f46/TP%20chimie%20n%C2%B02_temp%C3%A9ratures%20changement%20d'%C3%A9tat.pdf?Session=2531923",
+            "date": "16 nov. 2026"
+        }
+    ],
     "homeworks": [
         {
             "id": 1794830413846,
@@ -21,7 +30,7 @@
             "value": "13,10"
         }
     ],
-    "version": 5,
+    "version": 6,
     "generalAverage": {
         "value": "13,10",
         "updatedAt": "16 nov. 2026"
